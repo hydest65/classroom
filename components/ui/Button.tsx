@@ -18,11 +18,15 @@ type NativeButtonProps = CommonProps &
     href?: never;
   };
 
+function isAnchorProps(props: AnchorProps | NativeButtonProps): props is AnchorProps {
+  return typeof (props as AnchorProps).href === "string";
+}
+
 export function Button(props: AnchorProps | NativeButtonProps) {
   const { children, variant = "primary", className = "" } = props;
   const classes = `button button-${variant} ${className}`.trim();
 
-  if ("href" in props) {
+  if (isAnchorProps(props)) {
     const { children: _children, variant: _variant, className: _className, href, ...rest } = props;
     return (
       <a className={classes} href={href} {...rest}>

@@ -1,4 +1,4 @@
-# 智慧学堂官网 Demo
+# classroom
 
 一个基于 Next.js App Router 的首页原型项目，用于承接智慧学堂官网改版的视觉与信息架构。
 
