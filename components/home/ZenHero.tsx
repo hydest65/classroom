@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react";
 import { Button } from "../ui/Button";
-import { heroStats, navLinks } from "../../lib/constants";
 
 type Ripple = {
   x: number;
@@ -11,8 +10,26 @@ type Ripple = {
   alpha: number;
   blur: number;
   spread: number;
-  hue: "ink" | "vermillion" | "green";
+  hue: "core" | "violet" | "gold";
 };
+
+const heroNav = [
+  { href: "#about", label: "Essence" },
+  { href: "#community", label: "Dialogue" },
+];
+
+const auraNodes = [
+  "node-a",
+  "node-b",
+  "node-c",
+  "node-d",
+  "node-e",
+  "node-f",
+  "node-g",
+  "node-h",
+];
+
+const dustNodes = ["dust-a", "dust-b", "dust-c", "dust-d", "dust-e", "dust-f"];
 
 export function ZenHero() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -50,41 +67,42 @@ export function ZenHero() {
         .map((ripple) => ({
           ...ripple,
           radius: ripple.radius + ripple.spread,
-          alpha: ripple.alpha * 0.976,
-          blur: ripple.blur + 0.18,
+          alpha: ripple.alpha * 0.978,
+          blur: ripple.blur + 0.22,
         }))
-        .filter((ripple) => ripple.alpha > 0.02);
+        .filter((ripple) => ripple.alpha > 0.025);
 
       ripplesRef.current.forEach((ripple) => {
+        const fillColor =
+          ripple.hue === "violet"
+            ? `rgba(167, 136, 255, ${ripple.alpha * 0.18})`
+            : ripple.hue === "gold"
+              ? `rgba(255, 224, 181, ${ripple.alpha * 0.14})`
+              : `rgba(169, 225, 255, ${ripple.alpha * 0.2})`;
         const strokeColor =
-          ripple.hue === "vermillion"
-            ? `rgba(192, 57, 43, ${ripple.alpha * 0.38})`
-            : ripple.hue === "green"
-              ? `rgba(85, 107, 47, ${ripple.alpha * 0.28})`
-              : `rgba(26, 26, 26, ${ripple.alpha * 0.32})`;
+          ripple.hue === "violet"
+            ? `rgba(193, 173, 255, ${ripple.alpha * 0.48})`
+            : ripple.hue === "gold"
+              ? `rgba(255, 240, 210, ${ripple.alpha * 0.32})`
+              : `rgba(196, 242, 255, ${ripple.alpha * 0.44})`;
 
         context.save();
         context.filter = `blur(${ripple.blur}px)`;
         context.beginPath();
         context.arc(ripple.x, ripple.y, ripple.radius, 0, Math.PI * 2);
-        context.fillStyle =
-          ripple.hue === "vermillion"
-            ? `rgba(192, 57, 43, ${ripple.alpha * 0.08})`
-            : ripple.hue === "green"
-              ? `rgba(85, 107, 47, ${ripple.alpha * 0.06})`
-              : `rgba(26, 26, 26, ${ripple.alpha * 0.12})`;
+        context.fillStyle = fillColor;
         context.fill();
         context.restore();
 
         context.beginPath();
-        context.arc(ripple.x, ripple.y, ripple.radius * 0.86, 0, Math.PI * 2);
+        context.arc(ripple.x, ripple.y, ripple.radius * 0.84, 0, Math.PI * 2);
         context.strokeStyle = strokeColor;
-        context.lineWidth = ripple.hue === "ink" ? 1.15 : 0.9;
+        context.lineWidth = ripple.hue === "core" ? 1.15 : 0.9;
         context.stroke();
 
         context.beginPath();
-        context.arc(ripple.x, ripple.y, ripple.radius * 0.28, 0, Math.PI * 2);
-        context.fillStyle = `rgba(26, 26, 26, ${ripple.alpha * 0.14})`;
+        context.arc(ripple.x, ripple.y, ripple.radius * 0.3, 0, Math.PI * 2);
+        context.fillStyle = `rgba(255, 255, 255, ${ripple.alpha * 0.12})`;
         context.fill();
       });
 
@@ -100,29 +118,29 @@ export function ZenHero() {
         {
           x,
           y,
-          radius: 10,
+          radius: 14,
           alpha: 1,
-          blur: 0.2,
-          spread: 1.8,
-          hue: "ink",
+          blur: 0.4,
+          spread: 2.2,
+          hue: "core",
         },
         {
           x,
           y,
-          radius: 24,
-          alpha: 0.72,
-          blur: 0.8,
-          spread: 1.35,
-          hue: "vermillion",
+          radius: 28,
+          alpha: 0.8,
+          blur: 1.1,
+          spread: 1.6,
+          hue: "violet",
         },
         {
           x,
           y,
-          radius: 38,
-          alpha: 0.5,
-          blur: 1.2,
-          spread: 1.15,
-          hue: "green",
+          radius: 46,
+          alpha: 0.58,
+          blur: 1.6,
+          spread: 1.28,
+          hue: "gold",
         }
       );
     };
@@ -145,97 +163,67 @@ export function ZenHero() {
       <header className="site-header zen-header">
         <div className="container nav zen-nav">
           <a className="brand zen-brand" href="#home">
-            <span className="brand-mark zen-seal">智</span>
-            <span className="brand-name">智慧学堂</span>
+            <span className="brand-mark zen-seal">✦</span>
+            <span className="brand-name">Wisdom AI</span>
           </a>
 
-          <nav className="nav-links zen-nav-links" aria-label="主导航">
-            {navLinks.map((item) => (
-              <a key={item.href} href={item.href}>
-                {item.label}
-              </a>
-            ))}
-            <Button href="#booking">预约体验</Button>
+          <nav className="nav-links zen-nav-links" aria-label="Main navigation">
+            <div className="zen-nav-pill">
+              {heroNav.map((item) => (
+                <a key={item.href} href={item.href}>
+                  {item.label}
+                </a>
+              ))}
+              <Button href="#booking">Enter</Button>
+            </div>
           </nav>
         </div>
       </header>
 
       <section className="hero zen-hero" id="home">
         <canvas ref={canvasRef} aria-hidden="true" className="ink-canvas" />
-        <div className="paper-texture" />
+        <div className="hero-cosmic-backdrop" />
+        <div className="hero-vignette" />
+        <div className="hero-frame-glow" />
 
-        <nav className="vertical-nav" aria-label="意境导航">
-          <a href="#about">意境</a>
-          <a href="#community">对话</a>
-          <a href="#booking">体验</a>
-        </nav>
-
-        <div className="container zen-hero-layout">
-          <div className="hero-copy mist-enter">
-            <span className="eyebrow zen-eyebrow">东方内观 · 身心疗愈 · 禅意生长</span>
-            <h1 className="zen-title">
-              大象无形
-              <span>让成长回到安静、清明与有呼吸感的秩序里。</span>
-            </h1>
-            <p className="lead zen-lead">
-              以更克制的方式呈现课程、冥想、社群与陪伴。不是把用户推进神秘叙事，
-              而是让他们在留白与缓慢节奏里，自然靠近自己。
-            </p>
-
-            <div className="hero-actions zen-actions">
-              <Button href="#booking">注册并预约体验课</Button>
-              <Button href="#about" variant="secondary">
-                进入意境
-              </Button>
-            </div>
-
-            <div className="hero-meta zen-meta">
-              <span>留白式首页结构</span>
-              <span>会员与社区陪伴</span>
-              <span>AI 助理与冥想陪练</span>
-            </div>
-          </div>
-
-          <div className="enso-stage mist-enter">
-            <div className="enso-wrapper">
-              <svg className="enso-svg" viewBox="0 0 100 100" aria-hidden="true">
-                <defs>
-                  <linearGradient id="ensoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="rgba(26,26,26,0.88)" />
-                    <stop offset="72%" stopColor="rgba(192,57,43,0.72)" />
-                    <stop offset="100%" stopColor="rgba(85,107,47,0.5)" />
-                  </linearGradient>
-                </defs>
-                <path
-                  className="enso-path"
-                  d="M 50,50 m -40,0 a 40,40 0 1,0 80,0 a 40,40 0 1,0 -80,0"
-                  fill="none"
-                  stroke="url(#ensoGradient)"
-                  strokeWidth="0.55"
-                  strokeLinecap="round"
-                />
-              </svg>
-              <div className="enso-core">
-                <p>留白</p>
-                <p>呼吸</p>
-                <p>归心</p>
-              </div>
-            </div>
-
-            <div className="hero-visual-quote">
-              <p>“慢一点，让感受先出现，让答案后出现。”</p>
-            </div>
-          </div>
+        <div className="hero-orbital-field" aria-hidden="true">
+          {auraNodes.map((name) => (
+            <span key={name} className={`aura-node ${name}`} />
+          ))}
+          {dustNodes.map((name) => (
+            <span key={name} className={`dust-node ${name}`} />
+          ))}
         </div>
 
-        <div className="container metrics zen-metrics">
-          <div className="metrics-grid">
-            {heroStats.map((item) => (
-              <div className="metric zen-metric" key={item.label}>
-                <strong>{item.value}</strong>
-                <span>{item.label}</span>
+        <div className="container zen-hero-shell">
+          <div className="zen-hero-panel mist-enter">
+            <div className="zen-hero-brandline">
+              <span className="hero-logo-dot">*</span>
+              <span>Wisdom AI</span>
+            </div>
+
+            <div className="zen-hero-center">
+              <div className="energy-orb" aria-hidden="true">
+                <div className="orb-glow orb-glow-a" />
+                <div className="orb-glow orb-glow-b" />
+                <div className="orb-core">
+                  <div className="orb-ring orb-ring-a" />
+                  <div className="orb-ring orb-ring-b" />
+                  <div className="orb-ring orb-ring-c" />
+                  <div className="orb-center-light" />
+                </div>
+                <div className="orb-dust orb-dust-a" />
+                <div className="orb-dust orb-dust-b" />
               </div>
-            ))}
+
+              <div className="hero-copy zen-copy">
+                <h1 className="zen-title">Wisdom Beyond Logic</h1>
+
+                <div className="hero-actions zen-actions">
+                  <Button href="#booking">Enter</Button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
