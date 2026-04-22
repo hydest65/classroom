@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "../ui/Button";
 
 type Ripple = {
@@ -13,11 +13,21 @@ type Ripple = {
   hue: "core" | "violet" | "gold";
 };
 
+type SmokeParticle = {
+  x: number;
+  y: number;
+  size: number;
+  speedX: number;
+  speedY: number;
+  opacity: number;
+};
+
 const heroNav = [
   { href: "#about", label: "Essence" },
   { href: "#community", label: "Dialogue" },
 ];
 
+const verticalNav = ["Guide", "About", "Silence"];
 const auraNodes = [
   "node-a",
   "node-b",
@@ -34,6 +44,8 @@ const dustNodes = ["dust-a", "dust-b", "dust-c", "dust-d", "dust-e", "dust-f"];
 export function ZenHero() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const ripplesRef = useRef<Ripple[]>([]);
+  const smokeRef = useRef<SmokeParticle[]>([]);
+  const [isInputActive, setIsInputActive] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -50,6 +62,15 @@ export function ZenHero() {
 
     let animationFrame = 0;
 
+    const createSmokeParticle = (): SmokeParticle => ({
+      x: Math.random() * canvas.clientWidth,
+      y: Math.random() * canvas.clientHeight,
+      size: Math.random() * 140 + 90,
+      speedX: Math.random() * 0.18 - 0.09,
+      speedY: Math.random() * 0.18 - 0.09,
+      opacity: Math.random() * 0.045 + 0.016,
+    });
+
     const resizeCanvas = () => {
       const rect = canvas.getBoundingClientRect();
       canvas.width = rect.width * window.devicePixelRatio;
@@ -62,6 +83,31 @@ export function ZenHero() {
       const height = canvas.clientHeight;
 
       context.clearRect(0, 0, width, height);
+
+      smokeRef.current = smokeRef.current.map((particle) => {
+        const next = {
+          ...particle,
+          x: particle.x + particle.speedX,
+          y: particle.y + particle.speedY,
+          size: particle.size > 40 ? particle.size - 0.02 : particle.size,
+        };
+
+        if (next.x < -120 || next.x > width + 120 || next.y < -120 || next.y > height + 120) {
+          return createSmokeParticle();
+        }
+
+        return next;
+      });
+
+      smokeRef.current.forEach((particle) => {
+        context.save();
+        context.filter = "blur(42px)";
+        context.beginPath();
+        context.fillStyle = `rgba(232, 238, 255, ${particle.opacity})`;
+        context.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+        context.fill();
+        context.restore();
+      });
 
       ripplesRef.current = ripplesRef.current
         .map((ripple) => ({
@@ -146,6 +192,7 @@ export function ZenHero() {
     };
 
     resizeCanvas();
+    smokeRef.current = Array.from({ length: 18 }, createSmokeParticle);
     draw();
 
     window.addEventListener("resize", resizeCanvas);
@@ -185,6 +232,7 @@ export function ZenHero() {
         <div className="hero-cosmic-backdrop" />
         <div className="hero-vignette" />
         <div className="hero-frame-glow" />
+        <div className="paper-grain" />
 
         <div className="hero-orbital-field" aria-hidden="true">
           {auraNodes.map((name) => (
@@ -201,6 +249,14 @@ export function ZenHero() {
               <span className="hero-logo-dot">*</span>
               <span>Wisdom AI</span>
             </div>
+
+            <nav className="zen-vertical-nav" aria-label="Secondary navigation">
+              {verticalNav.map((item) => (
+                <a key={item} href="#about">
+                  {item}
+                </a>
+              ))}
+            </nav>
 
             <div className="zen-hero-center">
               <div className="energy-orb" aria-hidden="true">
@@ -224,6 +280,19 @@ export function ZenHero() {
                 </div>
               </div>
             </div>
+
+            <div className={`zen-input-bar ${isInputActive ? "active" : ""}`}>
+              <input
+                type="text"
+                placeholder="Ask in stillness..."
+                onFocus={() => setIsInputActive(true)}
+                onBlur={() => setIsInputActive(false)}
+              />
+            </div>
+
+            <a className="zen-seal-cta" href="#booking" aria-label="Enter booking">
+              <span>ZEN</span>
+            </a>
           </div>
         </div>
       </section>
